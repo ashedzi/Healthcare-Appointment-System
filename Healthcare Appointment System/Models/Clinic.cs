@@ -4,9 +4,9 @@
         public string Name { get; set; }
         public string email { get; set; }
         public string Address { get; set; }
-        public string AvailableHours { get; set; }
+        public TimeSpan StartAvailableHours { get; set; }
+        public TimeSpan EndAvailableHours { get; set; }
         public string ContactNumber { get; set; }
-        //public ICollection<Doctor> Doctors { get; set; } = new List<Doctor>();
-        //public ICollection<Patient> Patients { get; set; } = new List<Patient>();
+        public ICollection<DoctorClinic> DoctorClinics { get; set; } = new List<DoctorClinic>();
     }
 }
