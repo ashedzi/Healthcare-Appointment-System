@@ -10,6 +10,7 @@
         public string FullName {
             get { return $"{FirstName} {LastName}"; }
         }
+        public string PatientEmail { get; set; }
         public int Age => DateTime.Now.Year - DateOfBirth.Year -
                  (DateTime.Now.DayOfYear < DateOfBirth.DayOfYear ? 1 : 0);
         public DateTime DateOfBirth { get; set; }
