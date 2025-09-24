@@ -130,11 +130,11 @@ namespace Healthcare_Appointment_System.Models {
 
             // Patients
             modelBuilder.Entity<Patient>().HasData(
-                new Patient { PatientId = 1, FirstName = "Tom", LastName = "Anderson", DateOfBirth = new DateTime(1990, 5, 12), Address = "12 River Rd", EmergencyContact = "555-9000", PhoneNumber = "555-6001", Gender = GenderList.Male },
-                new Patient { PatientId = 2, FirstName = "Emily", LastName = "Clark", DateOfBirth = new DateTime(1985, 11, 23), Address = "34 Lake St", EmergencyContact = "555-9001", PhoneNumber = "555-6002", Gender = GenderList.Female },
-                new Patient { PatientId = 3, FirstName = "David", LastName = "Lee", DateOfBirth = new DateTime(2000, 3, 5), Address = "56 Hill Ave", EmergencyContact = "555-9002", PhoneNumber = "555-6003", Gender = GenderList.Male },
-                new Patient { PatientId = 4, FirstName = "Sophia", LastName = "Taylor", DateOfBirth = new DateTime(1995, 7, 17), Address = "78 Pine St", EmergencyContact = "555-9003", PhoneNumber = "555-6004", Gender = GenderList.Female },
-                new Patient { PatientId = 5, FirstName = "James", LastName = "Wilson", DateOfBirth = new DateTime(1988, 1, 30), Address = "90 Oak Rd", EmergencyContact = "555-9004", PhoneNumber = "555-6005", Gender = GenderList.Male }
+                new Patient { PatientId = 1, FirstName = "Tom", LastName = "Anderson", PatientEmail = "tomanderson@example.com", DateOfBirth = new DateTime(1990, 5, 12), Address = "12 River Rd", EmergencyContact = "555-9000", PhoneNumber = "555-6001", Gender = GenderList.Male },
+                new Patient { PatientId = 2, FirstName = "Emily", LastName = "Clark", PatientEmail = "emilyclarke@example.com", DateOfBirth = new DateTime(1985, 11, 23), Address = "34 Lake St", EmergencyContact = "555-9001", PhoneNumber = "555-6002", Gender = GenderList.Female },
+                new Patient { PatientId = 3, FirstName = "David", LastName = "Lee", PatientEmail = "davidlee@example.com", DateOfBirth = new DateTime(2000, 3, 5), Address = "56 Hill Ave", EmergencyContact = "555-9002", PhoneNumber = "555-6003", Gender = GenderList.Male },
+                new Patient { PatientId = 4, FirstName = "Sophia", LastName = "Taylor", PatientEmail = "sophiataylor@example.com", DateOfBirth = new DateTime(1995, 7, 17), Address = "78 Pine St", EmergencyContact = "555-9003", PhoneNumber = "555-6004", Gender = GenderList.Female },
+                new Patient { PatientId = 5, FirstName = "James", LastName = "Wilson", PatientEmail = "jameswilson@example.com", DateOfBirth = new DateTime(1988, 1, 30), Address = "90 Oak Rd", EmergencyContact = "555-9004", PhoneNumber = "555-6005", Gender = GenderList.Male }
             );
 
             // DoctorClinic relationships
