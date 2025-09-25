@@ -22,6 +22,10 @@ namespace Healthcare_Appointment_System.Controllers {
             return Ok(doctors);
         }
 
+
+        //GET /api/doctors - Get all doctors (with specialty filtering)
+
+        // GET /api/doctors/{id}- Get doctor by ID
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDoctor(int id) {
             Doctor? doctor = await _context.Doctors.FindAsync(id);
@@ -31,9 +35,17 @@ namespace Healthcare_Appointment_System.Controllers {
             return Ok(doctor);
         }
 
-        //GET /api/doctors - Get all doctors (with specialty filtering)
-        // GET /api/doctors/{id}- Get doctor by ID
         // POST /api/doctors - Add new doctor
+        [HttpPost]
+        public async Task<IActionResult> CreateDoctor(Doctor doctor) {
+            if(!ModelState.IsValid) {
+                return BadRequest(ModelState);
+            }
+            _context.Doctors.Add(doctor);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction(nameof(GetDoctor), new { id = doctor.DoctorId }, doctor);
+        }
+
         // PUT /api/doctors/{id}-Update doctor information
         //o	GET /api/doctors/{id}/ schedule - Get doctor's availability
         //o	GET /api/doctors/specialties - Get all specialties
