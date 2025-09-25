@@ -47,11 +47,38 @@ namespace Healthcare_Appointment_System.Controllers {
         }
 
         // PUT /api/doctors/{id}-Update doctor information
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> UpdateDoctor(int id, Doctor doctor) {
+            if(id != doctor.DoctorId) {
+                return BadRequest();
+            }
+            if(!ModelState.IsValid) {
+                return BadRequest(ModelState);
+            }
+            _context.Entry(doctor).State = EntityState.Modified;
+            try {
+                await _context.SaveChangesAsync();
+            } catch(DbUpdateConcurrencyException) {
+                if(!_context.Doctors.Any(d => d.DoctorId == id)) {
+                    return NotFound();
+                } else {
+                    throw;
+                }
+                return NoContent();
+            }
+        }
         //o	GET /api/doctors/{id}/ schedule - Get doctor's availability
         //o	GET /api/doctors/specialties - Get all specialties
-
-        public IActionResult Index() {
-            return View();
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteDoctor(int id) {
+            Doctor? doctor = await _context.Doctors.FindAsync(id);
+            if (doctor == null) {
+                return NotFound();
+            }
+            _context.Doctors.Remove(doctor);
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }
