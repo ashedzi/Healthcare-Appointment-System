@@ -19,6 +19,15 @@ namespace Healthcare_Appointment_System.Controllers {
             return Ok(doctors);
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetDoctor(int id) {
+            Doctor? doctor = await _context.Doctors.FindAsync(id);
+            if(doctor == null) {
+                return NotFound();
+            }
+            return Ok(doctor);
+        }
+
         //GET /api/doctors - Get all doctors (with specialty filtering)
         // GET /api/doctors/{id}- Get doctor by ID
         // POST /api/doctors - Add new doctor
