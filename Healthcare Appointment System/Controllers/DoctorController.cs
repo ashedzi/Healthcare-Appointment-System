@@ -1,4 +1,5 @@
-﻿using Healthcare_Appointment_System.Models;
+﻿using AutoMapper;
+using Healthcare_Appointment_System.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
@@ -6,11 +7,13 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 namespace Healthcare_Appointment_System.Controllers {
     [Route("api/[controller")]
     [ApiController]
-    public class DoctorController : ControllerBase {
+    public class DoctorController : Controller {
+        private readonly IMapper _mapper;
         private readonly HealthcareAppointmentSystemContext _context;
 
-        public DoctorController(HealthcareAppointmentSystemContext context) {
+        public DoctorController(HealthcareAppointmentSystemContext context, IMapper mapper) {
             _context = context;
+            _mapper = mapper;
         }
 
         [HttpGet]
