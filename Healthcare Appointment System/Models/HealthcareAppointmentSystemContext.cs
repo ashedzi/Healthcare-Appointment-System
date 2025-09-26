@@ -16,6 +16,10 @@ namespace Healthcare_Appointment_System.Models {
                 .HasKey(d => d.DoctorId);
 
             modelBuilder.Entity<Doctor>()
+                .Property(d => d.DoctorId)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<Doctor>()
                 .Property(d => d.FirstName)
                 .IsRequired()
                 .HasMaxLength(25);
@@ -45,6 +49,11 @@ namespace Healthcare_Appointment_System.Models {
                 .HasKey(p => p.PatientId);
 
             modelBuilder.Entity<Patient>()
+                .Property(p => p.PatientId)
+                .ValueGeneratedOnAdd();
+
+
+            modelBuilder.Entity<Patient>()
                 .Property(p => p.FirstName)
                 .IsRequired()
                 .HasMaxLength(25);
@@ -64,6 +73,10 @@ namespace Healthcare_Appointment_System.Models {
                 .HasKey(c => c.ClinicId);
 
             modelBuilder.Entity<Clinic>()
+                .Property(c => c.ClinicId)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<Clinic>()
                 .Property(c => c.Name)
                 .IsRequired()
                 .HasMaxLength(50);
@@ -79,6 +92,10 @@ namespace Healthcare_Appointment_System.Models {
             // ===== Appointment =====
             modelBuilder.Entity<Appointment>()
                 .HasKey(a => a.AppointmentId);
+
+            modelBuilder.Entity<Appointment>()
+                .Property(a => a.AppointmentId)
+                .ValueGeneratedOnAdd();
 
             modelBuilder.Entity<Appointment>()
                 .HasOne(a => a.Doctor)
