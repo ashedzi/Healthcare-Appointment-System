@@ -60,7 +60,7 @@ namespace Healthcare_Appointment_System.Controllers {
 
         //Add new doctor
         [HttpPost]
-        public async Task<IActionResult> CreateDoctor(CreateDoctorDTO createDto) {
+        public async Task<ActionResult<IEnumerable<DoctorDTO>>> CreateDoctor(CreateDoctorDTO createDto) {
             if(!ModelState.IsValid) {
                 return BadRequest(ModelState);
             }
