@@ -37,10 +37,13 @@ namespace Healthcare_Appointment_System.Controllers {
         }
 
         //Get all docs by specialties
-        [HttpGet("specialties")]
-        public ActionResult<IEnumerable<string>> GetSpecialties() {
-            List<string> specialties = System.Enum.GetNames(typeof(Specialty)).ToList();
-            return Ok(specialties);
+        [HttpGet("specialty/{specialty}")]
+        public async Task<ActionResult<List<DoctorDTO>>> GetDoctorsBySpecialty(Specialty specialty) {
+            List<Doctor> doctors = await _context.Doctors
+                .Where(d => d.DoctorSpecialty == specialty)
+                .ToListAsync();
+
+            return Ok(_mapper.Map<List<DoctorDTO>>(doctors));
         }
 
         //Get doctors appointment availabilty
@@ -48,12 +51,16 @@ namespace Healthcare_Appointment_System.Controllers {
         public async Task<ActionResult<IEnumerable<AppointmentDTO>>> GetDoctorSchedule(int id) {
             Doctor doctor = await _context.Doctors
                 .Include(d => d.Appointments)
+                    .ThenInclude(a => a.Patient)
                 .FirstOrDefaultAsync(d => d.DoctorId == id);
 
             if(doctor == null) {
                 return NotFound();
             }
 
+            foreach (var appt in doctor.Appointments) {
+                Console.WriteLine($"Appt {appt.AppointmentId} → Patient: {appt.Patient?.FirstName} {appt.Patient?.LastName}");
+            }
             List<AppointmentDTO> appointments = _mapper.Map<List<AppointmentDTO>>(doctor.Appointments);
             return Ok(appointments);
         }
