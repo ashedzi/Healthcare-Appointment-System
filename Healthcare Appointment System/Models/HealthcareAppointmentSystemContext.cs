@@ -86,7 +86,7 @@ namespace Healthcare_Appointment_System.Models {
                 .HasMaxLength(50);
 
             modelBuilder.Entity<Clinic>()
-                .Property(c => c.ContactNumber)
+                .Property(c => c.PhoneNumber)
                 .HasMaxLength(15);
 
             // ===== Appointment =====
@@ -129,11 +129,11 @@ namespace Healthcare_Appointment_System.Models {
             //seed data 
             // Clinics
             modelBuilder.Entity<Clinic>().HasData(
-                new Clinic { ClinicId = 1, Name = "City Health Clinic", ClinicEmail = "info@cityhealth.com", ClinicAddress = "123 Main St", StartOperatingHours = new TimeSpan(8, 0, 0), EndOperatingHours = new TimeSpan(17, 0, 0), ContactNumber = "555-1000" },
-                new Clinic { ClinicId = 2, Name = "Downtown Medical Center", ClinicEmail = "contact@downtownmed.com", ClinicAddress = "456 Elm Ave", StartOperatingHours = new TimeSpan(9, 0, 0), EndOperatingHours = new TimeSpan(18, 0, 0), ContactNumber = "555-2000" },
-                new Clinic { ClinicId = 3, Name = "Suburban Family Clinic", ClinicEmail = "hello@suburbanclinic.com", ClinicAddress = "789 Oak Blvd", StartOperatingHours = new TimeSpan(7, 0, 0), EndOperatingHours = new TimeSpan(16, 0, 0), ContactNumber = "555-3000" },
-                new Clinic { ClinicId = 4, Name = "Specialist Care Center", ClinicEmail = "info@specialistcare.com", ClinicAddress = "101 Pine Rd", StartOperatingHours = new TimeSpan(10, 0, 0), EndOperatingHours = new TimeSpan(19, 0, 0), ContactNumber = "555-4000" },
-                new Clinic { ClinicId = 5, Name = "Health & Wellness Clinic", ClinicEmail = "contact@wellnessclinic.com", ClinicAddress = "202 Maple St", StartOperatingHours = new TimeSpan(8, 30, 0), EndOperatingHours = new TimeSpan(17, 30, 0), ContactNumber = "555-5000" }
+                new Clinic { ClinicId = 1, Name = "City Health Clinic", ClinicEmail = "info@cityhealth.com", ClinicAddress = "123 Main St", StartOperatingHours = new TimeSpan(8, 0, 0), EndOperatingHours = new TimeSpan(17, 0, 0), PhoneNumber = "555-1000" },
+                new Clinic { ClinicId = 2, Name = "Downtown Medical Center", ClinicEmail = "contact@downtownmed.com", ClinicAddress = "456 Elm Ave", StartOperatingHours = new TimeSpan(9, 0, 0), EndOperatingHours = new TimeSpan(18, 0, 0), PhoneNumber = "555-2000" },
+                new Clinic { ClinicId = 3, Name = "Suburban Family Clinic", ClinicEmail = "hello@suburbanclinic.com", ClinicAddress = "789 Oak Blvd", StartOperatingHours = new TimeSpan(7, 0, 0), EndOperatingHours = new TimeSpan(16, 0, 0), PhoneNumber = "555-3000" },
+                new Clinic { ClinicId = 4, Name = "Specialist Care Center", ClinicEmail = "info@specialistcare.com", ClinicAddress = "101 Pine Rd", StartOperatingHours = new TimeSpan(10, 0, 0), EndOperatingHours = new TimeSpan(19, 0, 0), PhoneNumber = "555-4000" },
+                new Clinic { ClinicId = 5, Name = "Health & Wellness Clinic", ClinicEmail = "contact@wellnessclinic.com", ClinicAddress = "202 Maple St", StartOperatingHours = new TimeSpan(8, 30, 0), EndOperatingHours = new TimeSpan(17, 30, 0), PhoneNumber = "555-5000" }
             );
 
             // Doctors
