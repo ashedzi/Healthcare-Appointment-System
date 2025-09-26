@@ -27,7 +27,7 @@ namespace Healthcare_Appointment_System.Controllers {
             return Ok(clinicDTOs);
         }
 
-        //    o GET /api/clinics/{id} - Get clinic details with doctors
+        // Get clinic details with doctors
         [HttpGet("{id}")]
         public async Task<ActionResult<ClinicDTO>> GetClinic(int id) {
             Clinic clinic = await _context.Clinics
@@ -42,9 +42,9 @@ namespace Healthcare_Appointment_System.Controllers {
             return Ok(clinicDTO);
         }
 
-        //    o   POST /api/clinics - Add new clinic
+        //Add new clinic
         [HttpPost]
-        public async Task<IActionResult> CreateClinic(CreateClinicDTO createDto) {
+        public async Task<ActionResult<ClinicDTO>> CreateClinic(CreateClinicDTO createDto) {
             if(!ModelState.IsValid) {
                 return BadRequest(ModelState);
 
@@ -58,7 +58,7 @@ namespace Healthcare_Appointment_System.Controllers {
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateClinic(int id, UpdateClinicDTO updateDto) {
+        public async Task<ActionResult<ClinicDTO>> UpdateClinic(int id, UpdateClinicDTO updateDto) {
             if(!ModelState.IsValid) {
                 return BadRequest(ModelState);
             }
@@ -75,7 +75,7 @@ namespace Healthcare_Appointment_System.Controllers {
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteClinic(int id) {
+        public async Task<ActionResult<ClinicDTO>> DeleteClinic(int id) {
             Clinic clinic = await _context.Clinics.FindAsync(id);
             if(clinic == null) {
                 return NotFound();
