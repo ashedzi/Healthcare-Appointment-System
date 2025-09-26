@@ -17,6 +17,7 @@
         public string Address { get; set; }
         public string EmergencyContact { get; set; }
         public string PhoneNumber { get; set; }
+        public bool IsDeleted { get; set; } = false;
         public GenderList Gender { get; set; }
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
     }

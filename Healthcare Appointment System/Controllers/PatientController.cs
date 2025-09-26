@@ -21,7 +21,10 @@ namespace Healthcare_Appointment_System.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PatientDTO>>> GetPatients()
         {
-            List<Patient> patients = await _context.Patients.ToListAsync();
+            List<Patient> patients = await _context.Patients
+                .Where(p => !p.IsDeleted)
+                .ToListAsync();
+
             List<PatientDTO> result = _mapper.Map<List<PatientDTO>>(patients);
             return Ok(result);
         }
@@ -29,7 +32,10 @@ namespace Healthcare_Appointment_System.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<PatientDTO>> GetPatient(int id)
         {
-            Patient patient = await _context.Patients.FindAsync(id);
+            Patient patient = await _context.Patients
+                .Where(p => !p.IsDeleted)
+                .FirstOrDefaultAsync(p => p.PatientId == id);
+
             if (patient == null) return NotFound();
 
             PatientDTO dto = _mapper.Map<PatientDTO>(patient);
@@ -67,7 +73,9 @@ namespace Healthcare_Appointment_System.Controllers
             Patient patient = await _context.Patients.FindAsync(id);
             if (patient == null) return NotFound();
 
-            _context.Patients.Remove(patient);
+            if (patient.IsDeleted) return BadRequest("Patient already deleted.");
+
+            patient.IsDeleted = true;
             await _context.SaveChangesAsync();
 
             return NoContent();
