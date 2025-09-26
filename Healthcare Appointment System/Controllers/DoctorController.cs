@@ -58,6 +58,9 @@ namespace Healthcare_Appointment_System.Controllers {
                 return NotFound();
             }
 
+            foreach (var appt in doctor.Appointments) {
+                Console.WriteLine($"Appt {appt.AppointmentId} → Patient: {appt.Patient?.FirstName} {appt.Patient?.LastName}");
+            }
             List<AppointmentDTO> appointments = _mapper.Map<List<AppointmentDTO>>(doctor.Appointments);
             return Ok(appointments);
         }
