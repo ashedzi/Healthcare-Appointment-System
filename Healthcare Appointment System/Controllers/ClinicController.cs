@@ -18,8 +18,11 @@ namespace Healthcare_Appointment_System.Controllers {
         //Get all clinics
 
         [HttpGet]
-        public async Task<IActionResult> GetClinics() {
-            List<Clinic> clinics = await _context.Clinics.ToListAsync();
+        public async Task<ActionResult<IEnumerable<ClinicDTO>>> GetClinics() {
+            List<Clinic> clinics = await _context.Clinics
+                .Include(c => c.DoctorClinics)
+                .ThenInclude(dc => dc.Doctor)
+                .ToListAsync();
             List<ClinicDTO> clinicDTOs = _mapper.Map<List<ClinicDTO>>(clinics);
             return Ok(clinicDTOs);
         }
