@@ -17,7 +17,7 @@ namespace Healthcare_Appointment_System.Controllers {
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetDoctors() {
+        public async Task<ActionResult<IEnumerable<DoctorDTO>>> GetDoctors() {
             List<Doctor> doctors = await _context.Doctors.ToListAsync();
             List<DoctorDTO> doctorDTOs = _mapper.Map<List<DoctorDTO>>(doctors);
             return Ok(doctorDTOs);
@@ -25,7 +25,7 @@ namespace Healthcare_Appointment_System.Controllers {
 
         //Get doctor by ID
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetDoctor(int id) {
+        public async Task<ActionResult<IEnumerable<DoctorDTO>>> GetDoctor(int id) {
             Doctor? doctor = await _context.Doctors
                 .Include(d => d.Appointments)
                 .FirstOrDefaultAsync(d => d.DoctorId == id);
@@ -38,14 +38,14 @@ namespace Healthcare_Appointment_System.Controllers {
 
         //Get all docs by specialties
         [HttpGet("specialties")]
-        public IActionResult GetSpecialties() {
+        public ActionResult<IEnumerable<string>> GetSpecialties() {
             List<string> specialties = System.Enum.GetNames(typeof(Specialty)).ToList();
             return Ok(specialties);
         }
 
         //Get doctors appointment availabilty
         [HttpGet("{id}/schedule")]
-        public async Task<IActionResult> GetDoctorSchedule(int id) {
+        public async Task<ActionResult<IEnumerable<AppointmentDTO>>> GetDoctorSchedule(int id) {
             Doctor doctor = await _context.Doctors
                 .Include(d => d.Appointments)
                 .FirstOrDefaultAsync(d => d.DoctorId == id);
@@ -60,7 +60,7 @@ namespace Healthcare_Appointment_System.Controllers {
 
         //Add new doctor
         [HttpPost]
-        public async Task<IActionResult> CreateDoctor(CreateDoctorDTO createDto) {
+        public async Task<ActionResult<IEnumerable<DoctorDTO>>> CreateDoctor(CreateDoctorDTO createDto) {
             if(!ModelState.IsValid) {
                 return BadRequest(ModelState);
             }
@@ -74,7 +74,7 @@ namespace Healthcare_Appointment_System.Controllers {
 
         //Update doctor information
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateDoctor(int id, UpdateDoctorDTO updateDto) {
+        public async Task<ActionResult<IEnumerable<DoctorDTO>>> UpdateDoctor(int id, UpdateDoctorDTO updateDto) {
             if(!ModelState.IsValid) {
                 return BadRequest(ModelState);
             }
