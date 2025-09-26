@@ -37,10 +37,13 @@ namespace Healthcare_Appointment_System.Controllers {
         }
 
         //Get all docs by specialties
-        [HttpGet("specialties")]
-        public ActionResult<IEnumerable<string>> GetSpecialties() {
-            List<string> specialties = System.Enum.GetNames(typeof(Specialty)).ToList();
-            return Ok(specialties);
+        [HttpGet("specialty/{specialty}")]
+        public async Task<ActionResult<List<DoctorDTO>>> GetDoctorsBySpecialty(Specialty specialty) {
+            List<Doctor> doctors = await _context.Doctors
+                .Where(d => d.DoctorSpecialty == specialty)
+                .ToListAsync();
+
+            return Ok(_mapper.Map<List<DoctorDTO>>(doctors));
         }
 
         //Get doctors appointment availabilty
