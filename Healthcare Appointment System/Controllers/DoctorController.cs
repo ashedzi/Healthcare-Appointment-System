@@ -17,7 +17,7 @@ namespace Healthcare_Appointment_System.Controllers {
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetDoctors() {
+        public async Task<ActionResult<IEnumerable<DoctorDTO>>> GetDoctors() {
             List<Doctor> doctors = await _context.Doctors.ToListAsync();
             List<DoctorDTO> doctorDTOs = _mapper.Map<List<DoctorDTO>>(doctors);
             return Ok(doctorDTOs);
