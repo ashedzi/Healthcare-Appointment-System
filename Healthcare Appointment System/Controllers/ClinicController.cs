@@ -45,13 +45,30 @@ namespace Healthcare_Appointment_System.Controllers {
             if(!ModelState.IsValid) {
                 return BadRequest(ModelState);
 
-                Clinic clinic = _mapper.Map<Clinic>(createDto);
-                _context.Clinics.Add(clinic);
-                await _context.SaveChangesAsync();
-
-                ClinicDTO clinicDTO = _mapper.Map<ClinicDTO>(clinic);
-                return CreatedAtAction(nameof(GetClinic), new { id = clinic.ClinicId }, clinicDTO);
             }
+            Clinic clinic = _mapper.Map<Clinic>(createDto);
+            _context.Clinics.Add(clinic);
+            await _context.SaveChangesAsync();
+
+            ClinicDTO clinicDTO = _mapper.Map<ClinicDTO>(clinic);
+            return CreatedAtAction(nameof(GetClinic), new { id = clinic.ClinicId }, clinicDTO);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateClinic(int id, UpdateClinicDTO updateDto) {
+            if(!ModelState.IsValid) {
+                return BadRequest(ModelState);
+            }
+
+            Clinic clinic = await _context.Clinics.FindAsync(id);
+            if(clinic == null) {
+                return NotFound();
+            }
+
+            _mapper.Map(updateDto, clinic);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }
