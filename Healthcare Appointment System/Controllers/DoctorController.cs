@@ -45,7 +45,7 @@ namespace Healthcare_Appointment_System.Controllers {
 
         //Get doctors appointment availabilty
         [HttpGet("{id}/schedule")]
-        public async Task<IActionResult> GetDoctorSchedule(int id) {
+        public async Task<ActionResult<IEnumerable<AppointmentDTO>>> GetDoctorSchedule(int id) {
             Doctor doctor = await _context.Doctors
                 .Include(d => d.Appointments)
                 .FirstOrDefaultAsync(d => d.DoctorId == id);
