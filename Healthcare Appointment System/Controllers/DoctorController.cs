@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Healthcare_Appointment_System.Controllers {
-    [Route("api/[controller")]
+    [Route("api/[controller]")]
     [ApiController]
     public class DoctorController : Controller {
         private readonly IMapper _mapper;
@@ -19,60 +19,79 @@ namespace Healthcare_Appointment_System.Controllers {
         [HttpGet]
         public async Task<IActionResult> GetDoctors() {
             List<Doctor> doctors = await _context.Doctors.ToListAsync();
-            return Ok(doctors);
+            List<DoctorDTO> doctorDTOs = _mapper.Map<List<DoctorDTO>>(doctors);
+            return Ok(doctorDTOs);
         }
 
-
-        //GET /api/doctors - Get all doctors (with specialty filtering)
-
-        // GET /api/doctors/{id}- Get doctor by ID
+        //Get doctor by ID
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDoctor(int id) {
-            Doctor? doctor = await _context.Doctors.FindAsync(id);
+            Doctor? doctor = await _context.Doctors
+                .Include(d => d.Appointments)
+                .FirstOrDefaultAsync(d => d.DoctorId == id);
             if(doctor == null) {
                 return NotFound();
             }
-            return Ok(doctor);
+            DoctorDTO doctorDTO = _mapper.Map<DoctorDTO>(doctor);
+            return Ok(doctorDTO);
         }
 
-        // POST /api/doctors - Add new doctor
+        //Get all docs by specialties
+        [HttpGet("specialties")]
+        public IActionResult GetSpecialties() {
+            List<string> specialties = System.Enum.GetNames(typeof(Specialty)).ToList();
+            return Ok(specialties);
+        }
+
+        //Get doctors appointment availabilty
+        [HttpGet("{id}/schedule")]
+        public async Task<IActionResult> GetDoctorSchedule(int id) {
+            Doctor doctor = await _context.Doctors
+                .Include(d => d.Appointments)
+                .FirstOrDefaultAsync(d => d.DoctorId == id);
+
+            if(doctor == null) {
+                return NotFound();
+            }
+
+            List<AppointmentDTO> appointments = _mapper.Map<List<AppointmentDTO>>(doctor.Appointments);
+            return Ok(appointments);
+        }
+
+        //Add new doctor
         [HttpPost]
-        public async Task<IActionResult> CreateDoctor(Doctor doctor) {
+        public async Task<IActionResult> CreateDoctor(CreateDoctorDTO createDto) {
             if(!ModelState.IsValid) {
                 return BadRequest(ModelState);
             }
+            Doctor doctor = _mapper.Map<Doctor>(createDto);
             _context.Doctors.Add(doctor);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetDoctor), new { id = doctor.DoctorId }, doctor);
+
+            DoctorDTO doctorDTO = _mapper.Map<DoctorDTO>(doctor);
+            return CreatedAtAction(nameof(GetDoctor), new { id = doctor.DoctorId }, doctorDTO);
         }
 
-        // PUT /api/doctors/{id}-Update doctor information
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> UpdateDoctor(int id, Doctor doctor) {
-            if(id != doctor.DoctorId) {
-                return BadRequest();
-            }
+        //Update doctor information
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateDoctor(int id, UpdateDoctorDTO updateDto) {
             if(!ModelState.IsValid) {
                 return BadRequest(ModelState);
             }
-            _context.Entry(doctor).State = EntityState.Modified;
-            try {
-                await _context.SaveChangesAsync();
-            } catch(DbUpdateConcurrencyException) {
-                if(!_context.Doctors.Any(d => d.DoctorId == id)) {
-                    return NotFound();
-                } else {
-                    throw;
-                }
-                return NoContent();
+            Doctor doctor = await _context.Doctors.FindAsync(id);
+            if(doctor == null) {
+                return NotFound();
             }
+
+            _mapper.Map(updateDto, doctor);
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
-        //o	GET /api/doctors/{id}/ schedule - Get doctor's availability
-        //o	GET /api/doctors/specialties - Get all specialties
+
+        //delete doctor
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDoctor(int id) {
-            Doctor? doctor = await _context.Doctors.FindAsync(id);
+            Doctor doctor = await _context.Doctors.FindAsync(id);
             if (doctor == null) {
                 return NotFound();
             }

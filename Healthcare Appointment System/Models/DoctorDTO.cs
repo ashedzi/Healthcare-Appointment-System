@@ -1,5 +1,5 @@
 ﻿namespace Healthcare_Appointment_System.Models {
-    public class DoctorSummaryDTO {
+    public class DoctorDTO {
         public int DoctorId { get; set; }
         public string FullName { get; set; }   
         public string Email { get; set; }
