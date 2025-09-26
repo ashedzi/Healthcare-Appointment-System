@@ -26,4 +26,31 @@
     public class UpdateDoctorDTO : CreateDoctorDTO {
 
     }
+
+    public class AvailableSlotDTO {
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
+        public int Duration { get; set; }
+        public string TimeSlot => $"{StartTime:hh:mm tt} - {EndTime:hh:mm tt}";
+        public int ClinicId { get; set; }
+        public string ClinicName { get; set; }
+    }
+
+    public class AssignDoctorToClinicDTO {
+        public int ClinicId { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public Shift DoctorShift { get; set; }
+    }
+
+    public class DoctorClinicAssignmentDTO {
+        public int DoctorId { get; set; }
+        public string DoctorName { get; set; }
+        public int ClinicId { get; set; }
+        public string ClinicName { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public Shift DoctorShift { get; set; }
+        public string AssignmentPeriod => $"{StartDate:yyyy-MM-dd} to {EndDate:yyyy-MM-dd}";
+    }
 }
