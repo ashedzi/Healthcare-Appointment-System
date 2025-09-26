@@ -25,6 +25,16 @@ namespace Healthcare_Appointment_System.Controllers {
         }
 
         //    o GET /api/clinics/{id} - Get clinic details with doctors
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetDoctor(int id) {
+            Clinic clinic = await _context.ClinicsAsync;
+
+            if(clinic == null) {
+                return NotFound();
+            }
+            ClinicDTO clinicDTO = _mapper.Map<ClinicDTO>(clinic);
+            return Ok(clinicDTO);
+        }
 
         //    o   POST /api/clinics - Add new clinic
 
