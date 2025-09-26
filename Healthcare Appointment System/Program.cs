@@ -1,4 +1,5 @@
 
+using Healthcare_Appointment_System.Mapping;
 using Microsoft.EntityFrameworkCore;
 
 namespace Healthcare_Appointment_System
@@ -8,6 +9,11 @@ namespace Healthcare_Appointment_System
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddAutoMapper(typeof(AppointmentProfile));
+            builder.Services.AddAutoMapper(typeof(ClinicProfile));
+            builder.Services.AddAutoMapper(typeof(DoctorProfile));
+            builder.Services.AddAutoMapper(typeof(PatientProfile));
 
             // Add services to the container.
 
