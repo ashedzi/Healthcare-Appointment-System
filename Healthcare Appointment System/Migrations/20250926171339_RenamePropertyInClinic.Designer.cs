@@ -4,6 +4,7 @@ using Healthcare_Appointment_System.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Healthcare_Appointment_System.Migrations
 {
     [DbContext(typeof(HealthcareAppointmentSystemContext))]
-    partial class HealthcareAppointmentSystemContextModelSnapshot : ModelSnapshot
+    [Migration("20250926171339_RenamePropertyInClinic")]
+    partial class RenamePropertyInClinic
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
