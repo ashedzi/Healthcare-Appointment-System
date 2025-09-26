@@ -27,7 +27,10 @@ namespace Healthcare_Appointment_System.Controllers {
         //    o GET /api/clinics/{id} - Get clinic details with doctors
         [HttpGet("{id}")]
         public async Task<IActionResult> GetClinic(int id) {
-            Clinic clinic = await _context.ClinicsAsync;
+            Clinic clinic = await _context.Clinics
+                .Include(c => c.DoctorClinics)
+                .ThenInclude(dc => dc.Doctor)
+                .FirstOrDefaultAsync(c => c.ClinicId == id);
 
             if(clinic == null) {
                 return NotFound();
