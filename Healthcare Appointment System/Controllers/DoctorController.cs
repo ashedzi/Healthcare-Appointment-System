@@ -7,7 +7,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 namespace Healthcare_Appointment_System.Controllers {
     [Route("api/[controller]")]
     [ApiController]
-    public class DoctorController : Controller {
+    public class DoctorController : ControllerBase {
         private readonly IMapper _mapper;
         private readonly HealthcareAppointmentSystemContext _context;
 
