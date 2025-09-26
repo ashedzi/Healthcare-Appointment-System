@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Healthcare_Appointment_System.Migrations
 {
     [DbContext(typeof(HealthcareAppointmentSystemContext))]
-    [Migration("20250926052840_SecondUpdate")]
-    partial class SecondUpdate
+    [Migration("20250926164330_AddPKIdentity")]
+    partial class AddPKIdentity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Healthcare_Appointment_System.Migrations
 {
     /// <inheritdoc />
-    public partial class SecondUpdate : Migration
+    public partial class AddPKIdentity : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
