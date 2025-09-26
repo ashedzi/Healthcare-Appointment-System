@@ -71,7 +71,8 @@ namespace Healthcare_Appointment_System.Controllers {
             _mapper.Map(updateDto, clinic);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            ClinicDTO clinicDTO = _mapper.Map<ClinicDTO>(clinic);
+            return Ok(clinicDTO);
         }
 
         [HttpDelete("{id}")]
