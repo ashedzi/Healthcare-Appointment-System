@@ -70,5 +70,17 @@ namespace Healthcare_Appointment_System.Controllers {
 
             return NoContent();
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteClinic(int id) {
+            Clinic clinic = await _context.Clinics.FindAsync(id);
+            if(clinic == null) {
+                return NotFound();
+            }
+
+            _context.Clinics.Remove(clinic);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }
