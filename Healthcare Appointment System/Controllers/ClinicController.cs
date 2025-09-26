@@ -26,7 +26,7 @@ namespace Healthcare_Appointment_System.Controllers {
 
         //    o GET /api/clinics/{id} - Get clinic details with doctors
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetDoctor(int id) {
+        public async Task<IActionResult> GetClinic(int id) {
             Clinic clinic = await _context.ClinicsAsync;
 
             if(clinic == null) {
@@ -37,9 +37,18 @@ namespace Healthcare_Appointment_System.Controllers {
         }
 
         //    o   POST /api/clinics - Add new clinic
+        [HttpPost]
+        public async Task<IActionResult> CreateClinic(CreateClinicDTO createDto) {
+            if(!ModelState.IsValid) {
+                return BadRequest(ModelState);
 
-        public IActionResult Index() {
-            return View();
+                Clinic clinic = _mapper.Map<Clinic>(createDto);
+                _context.Clinics.Add(clinic);
+                await _context.SaveChangesAsync();
+
+                ClinicDTO clinicDTO = _mapper.Map<ClinicDTO>(clinic);
+                return CreatedAtAction(nameof(GetClinic), new { id = clinic.ClinicId }, clinicDTO);
+            }
         }
     }
 }
