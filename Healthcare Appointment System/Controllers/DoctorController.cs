@@ -74,7 +74,7 @@ namespace Healthcare_Appointment_System.Controllers {
 
         //Update doctor information
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateDoctor(int id, UpdateDoctorDTO updateDto) {
+        public async Task<ActionResult<IEnumerable<DoctorDTO>>> UpdateDoctor(int id, UpdateDoctorDTO updateDto) {
             if(!ModelState.IsValid) {
                 return BadRequest(ModelState);
             }
