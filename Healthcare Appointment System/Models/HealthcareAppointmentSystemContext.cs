@@ -64,6 +64,10 @@ namespace Healthcare_Appointment_System.Models {
                 .HasKey(c => c.ClinicId);
 
             modelBuilder.Entity<Clinic>()
+                .Property(c => c.ClinicId)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<Clinic>()
                 .Property(c => c.Name)
                 .IsRequired()
                 .HasMaxLength(50);
