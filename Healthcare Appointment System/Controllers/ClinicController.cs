@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Healthcare_Appointment_System.Controllers {
     [Route("api/[controller]")]
     [ApiController]
-    public class ClinicController : Controller {
+    public class ClinicController : ControllerBase {
         private readonly HealthcareAppointmentSystemContext _context;
         private readonly IMapper _mapper;
 
