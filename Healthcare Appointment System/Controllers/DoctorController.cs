@@ -25,7 +25,7 @@ namespace Healthcare_Appointment_System.Controllers {
 
         //Get doctor by ID
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetDoctor(int id) {
+        public async Task<ActionResult<IEnumerable<DoctorDTO>>> GetDoctor(int id) {
             Doctor? doctor = await _context.Doctors
                 .Include(d => d.Appointments)
                 .FirstOrDefaultAsync(d => d.DoctorId == id);
@@ -38,7 +38,7 @@ namespace Healthcare_Appointment_System.Controllers {
 
         //Get all docs by specialties
         [HttpGet("specialties")]
-        public IActionResult GetSpecialties() {
+        public ActionResult<IEnumerable<string>> GetSpecialties() {
             List<string> specialties = System.Enum.GetNames(typeof(Specialty)).ToList();
             return Ok(specialties);
         }
