@@ -26,12 +26,7 @@ namespace Healthcare_Appointment_System
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen( c => {
-                var xmlFilename = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
-            });
 
-            builder.Services.AddSwaggerGen(c =>
-            {
                 c.SwaggerDoc("v1", new OpenApiInfo {
                     Title = "Healthcare Appointment System API",
                     Version = "v1",
@@ -41,8 +36,12 @@ namespace Healthcare_Appointment_System
                         Email = "support@healthcare.com"
                     }
                 });
+                var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                if(File.Exists(xmlPath)) {
+                    c.IncludeXmlComments(xmlPath);
+                }
             });
-
 
             var app = builder.Build();
 
@@ -55,6 +54,7 @@ namespace Healthcare_Appointment_System
                     c.RoutePrefix = string.Empty; 
                 });
             }
+
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
