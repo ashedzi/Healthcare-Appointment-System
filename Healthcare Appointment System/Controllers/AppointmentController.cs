@@ -5,6 +5,9 @@ using AutoMapper;
 
 namespace Healthcare_Appointment_System.Controllers
 {
+    /// <summary>
+    /// Controller for managing appointments in the Healthcare Appointment System.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class AppointmentsController : ControllerBase
@@ -17,6 +20,14 @@ namespace Healthcare_Appointment_System.Controllers
             _context = context;
             _mapper = mapper;
         }
+
+        /// <summary>
+        /// Retrieves all appointments, optionally filtered by date and status.
+        /// </summary>
+        /// <param name="date">Optional date to filter appointments.</param>
+        /// <param name="status">Optional status to filter appointments.</param>
+        /// <returns>A list of <see cref="AppointmentDTO"/>.</returns>
+        /// <response code="200">Returns the list of appointments.</response>
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AppointmentDTO>>> GetAppointments(DateTime? date, Status? status)
@@ -38,6 +49,14 @@ namespace Healthcare_Appointment_System.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Retrieves a specific appointment by ID.
+        /// </summary>
+        /// <param name="id">The ID of the appointment.</param>
+        /// <returns>An <see cref="AppointmentDTO"/> representing the appointment.</returns>
+        /// <response code="200">Returns the appointment if found.</response>
+        /// <response code="404">If the appointment with the specified ID is not found.</response>
+
         [HttpGet("{id}")]
         public async Task<ActionResult<AppointmentDTO>> GetAppointment(int id)
         {
@@ -53,6 +72,14 @@ namespace Healthcare_Appointment_System.Controllers
             return Ok(dto);
         }
 
+        /// <summary>
+        /// Creates a new appointment.
+        /// </summary>
+        /// <param name="dto">The details of the appointment to create.</param>
+        /// <returns>The created appointment.</returns>
+        /// <response code="201">Returns the newly created appointment.</response>
+        /// <response code="404">If the patient, doctor, or clinic does not exist.</response>
+        /// <response code="409">If there is a scheduling conflict for the patient.</response>
         [HttpPost]
         public async Task<ActionResult> CreateAppointment(CreateAppointmentDTO dto)
         {
@@ -91,7 +118,13 @@ namespace Healthcare_Appointment_System.Controllers
             return CreatedAtAction(nameof(GetAppointment), new { id = appointment.AppointmentId }, appointment);
         }
 
-
+        /// <summary>
+        /// Updates the status of an existing appointment.
+        /// </summary>
+        /// <param name="id">The ID of the appointment.</param>
+        /// <param name="newStatus">The new status to set.</param>
+        /// <response code="204">Status updated successfully.</response>
+        /// <response code="404">If the appointment is not found.</response>
         [HttpPut("{id}/status")]
         public async Task<ActionResult> UpdateAppointmentStatus(int id, Status newStatus)
         {
@@ -103,6 +136,13 @@ namespace Healthcare_Appointment_System.Controllers
 
             return NoContent();
         }
+
+        /// <summary>
+        /// Deletes an appointment.
+        /// </summary>
+        /// <param name="id">The ID of the appointment to delete.</param>
+        /// <response code="204">Appointment deleted successfully.</response>
+        /// <response code="404">If the appointment is not found.</response>
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteAppointment(int id)

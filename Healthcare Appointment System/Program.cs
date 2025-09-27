@@ -1,6 +1,7 @@
 
 using Healthcare_Appointment_System.Mapping;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 namespace Healthcare_Appointment_System
 {
@@ -24,7 +25,23 @@ namespace Healthcare_Appointment_System
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen( c => {
+
+                c.SwaggerDoc("v1", new OpenApiInfo {
+                    Title = "Healthcare Appointment System API",
+                    Version = "v1",
+                    Description = "API for managing doctors, patients, appointments, and clinics",
+                    Contact = new OpenApiContact {
+                        Name = "Healthcare Dev Team",
+                        Email = "support@healthcare.com"
+                    }
+                });
+                var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                if(File.Exists(xmlPath)) {
+                    c.IncludeXmlComments(xmlPath);
+                }
+            });
 
             var app = builder.Build();
 
@@ -32,8 +49,12 @@ namespace Healthcare_Appointment_System
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(c => {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Healthcare Appointment System API v1");
+                    c.RoutePrefix = string.Empty;
+                });
             }
+
             app.UseHttpsRedirection();
 
             app.UseAuthorization();

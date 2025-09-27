@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Healthcare_Appointment_System.Controllers {
+    /// <summary>
+    /// Controller for managing clinics in the Healthcare Appointment System.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class ClinicController : ControllerBase {
@@ -15,8 +18,10 @@ namespace Healthcare_Appointment_System.Controllers {
             _mapper = mapper;
         }
 
-        //Get all clinics
-
+        /// <summary>
+        /// Retrieves all clinics.
+        /// </summary>
+        /// <returns>A list of <see cref="ClinicDTO"/>.</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ClinicDTO>>> GetClinics() {
             List<Clinic> clinics = await _context.Clinics
@@ -27,7 +32,12 @@ namespace Healthcare_Appointment_System.Controllers {
             return Ok(clinicDTOs);
         }
 
-        // Get clinic details with doctors
+        /// <summary>
+        /// Retrieves a clinic by ID, including its doctors.
+        /// </summary>
+        /// <param name="id">The clinic ID.</param>
+        /// <returns>A <see cref="ClinicDTO"/> representing the clinic.</returns>
+        /// <response code="404">If the clinic is not found.</response>
         [HttpGet("{id}")]
         public async Task<ActionResult<ClinicDTO>> GetClinic(int id) {
             Clinic clinic = await _context.Clinics
@@ -42,7 +52,12 @@ namespace Healthcare_Appointment_System.Controllers {
             return Ok(clinicDTO);
         }
 
-        //Add new clinic
+        /// <summary>
+        /// Creates a new clinic.
+        /// </summary>
+        /// <param name="createDto">The clinic data.</param>
+        /// <returns>The newly created clinic.</returns>
+        /// <response code="400">If the model is invalid.</response>
         [HttpPost]
         public async Task<ActionResult<ClinicDTO>> CreateClinic(CreateClinicDTO createDto) {
             if(!ModelState.IsValid) {
@@ -57,6 +72,13 @@ namespace Healthcare_Appointment_System.Controllers {
             return CreatedAtAction(nameof(GetClinic), new { id = clinic.ClinicId }, clinicDTO);
         }
 
+        /// <summary>
+        /// Updates an existing clinic.
+        /// </summary>
+        /// <param name="id">The clinic ID.</param>
+        /// <param name="updateDto">Updated clinic data.</param>
+        /// <response code="400">If the model is invalid.</response>
+        /// <response code="404">If the clinic is not found.</response>
         [HttpPut("{id}")]
         public async Task<ActionResult<ClinicDTO>> UpdateClinic(int id, UpdateClinicDTO updateDto) {
             if(!ModelState.IsValid) {
@@ -75,6 +97,11 @@ namespace Healthcare_Appointment_System.Controllers {
             return Ok(clinicDTO);
         }
 
+        /// <summary>
+        /// Deletes a clinic.
+        /// </summary>
+        /// <param name="id">The clinic ID.</param>
+        /// <response code="404">If the clinic is not found.</response>
         [HttpDelete("{id}")]
         public async Task<ActionResult<ClinicDTO>> DeleteClinic(int id) {
             Clinic clinic = await _context.Clinics.FindAsync(id);
@@ -88,13 +115,15 @@ namespace Healthcare_Appointment_System.Controllers {
             return Ok(clinicDTO);
         }
 
-        // 2. GET /api/clinics/{clinicId}/schedule?date={date}
+        /// <summary>
+        /// Retrieves the schedule of a clinic for a specific date.
+        /// </summary>
+        /// <param name="clinicId">The clinic ID.</param>
+        /// <param name="date">Optional date (defaults to today).</param>
+        /// <returns>A <see cref="ClinicScheduleDTO"/> representing the schedule.</returns>
         [HttpGet("{clinicId}/schedule")]
         public async Task<ActionResult<ClinicScheduleDTO>> GetClinicSchedule(int clinicId, [FromQuery] DateTime? date) {
-            // Default to today if no date provided
             DateTime targetDate = date ?? DateTime.Today;
-
-            // Get clinic with doctors and appointments for the specified date
             Clinic clinic = await _context.Clinics
                 .Include(c => c.DoctorClinics.Where(dc =>
                     targetDate >= dc.StartDate &&
@@ -110,7 +139,6 @@ namespace Healthcare_Appointment_System.Controllers {
                 return NotFound("Clinic not found");
             }
 
-            // Build the schedule response
             ClinicScheduleDTO schedule = new ClinicScheduleDTO {
                 ClinicId = clinic.ClinicId,
                 ClinicName = clinic.Name,
@@ -119,7 +147,6 @@ namespace Healthcare_Appointment_System.Controllers {
                 DoctorSchedules = new List<DoctorScheduleDTO>()
             };
 
-            // Group appointments by doctor and organize schedule
             foreach (DoctorClinic doctorClinic in clinic.DoctorClinics) {
                 Doctor doctor = doctorClinic.Doctor;
                 DoctorScheduleDTO doctorSchedule = new DoctorScheduleDTO {
@@ -130,10 +157,9 @@ namespace Healthcare_Appointment_System.Controllers {
                     WorkingHours = $"{doctor.AvailableStart:hh\\:mm} - {doctor.AvailableEnd:hh\\:mm}",
                     Appointments = new List<ScheduledAppointmentDTO>(),
                     TotalAppointments = doctor.Appointments.Count,
-                    AvailableSlots = 0 // Will calculate below
+                    AvailableSlots = 0 
                 };
 
-                // Add scheduled appointments
                 foreach (Appointment appointment in doctor.Appointments.OrderBy(a => a.StartTime)) {
                     doctorSchedule.Appointments.Add(new ScheduledAppointmentDTO {
                         AppointmentId = appointment.AppointmentId,
@@ -147,7 +173,6 @@ namespace Healthcare_Appointment_System.Controllers {
                     });
                 }
 
-                // Calculate available slots for the day
                 TimeSpan currentTime = doctor.AvailableStart;
                 TimeSpan endTime = doctor.AvailableEnd;
                 int availableSlots = 0;
@@ -155,16 +180,12 @@ namespace Healthcare_Appointment_System.Controllers {
                 while (currentTime.Add(TimeSpan.FromMinutes(doctor.AppointmentDurationMinutes)) <= endTime) {
                     DateTime slotStart = targetDate.Date.Add(currentTime);
                     DateTime slotEnd = slotStart.AddMinutes(doctor.AppointmentDurationMinutes);
-
-                    // Check if this slot conflicts with existing appointments
                     bool isAvailable = !doctor.Appointments.Any(a =>
                         slotStart < a.EndTime && slotEnd > a.StartTime);
 
-                    // Check if slot is within clinic operating hours
                     bool withinClinicHours = currentTime >= clinic.StartOperatingHours &&
                                            currentTime.Add(TimeSpan.FromMinutes(doctor.AppointmentDurationMinutes)) <= clinic.EndOperatingHours;
 
-                    // Check if slot matches doctor's shift
                     bool matchesShift = (doctorClinic.DoctorShift == Shift.Morning && currentTime.Hours < 12) ||
                                        (doctorClinic.DoctorShift == Shift.Evening && currentTime.Hours >= 12);
 
@@ -179,12 +200,10 @@ namespace Healthcare_Appointment_System.Controllers {
                 schedule.DoctorSchedules.Add(doctorSchedule);
             }
 
-            // Calculate summary statistics
             schedule.TotalAppointments = schedule.DoctorSchedules.Sum(ds => ds.TotalAppointments);
             schedule.TotalAvailableSlots = schedule.DoctorSchedules.Sum(ds => ds.AvailableSlots);
             schedule.TotalDoctorsWorking = schedule.DoctorSchedules.Count;
 
-            // Separate doctors by shift
             schedule.MorningDoctors = schedule.DoctorSchedules
                 .Where(ds => ds.Shift == "Morning")
                 .Select(ds => ds.DoctorName)
