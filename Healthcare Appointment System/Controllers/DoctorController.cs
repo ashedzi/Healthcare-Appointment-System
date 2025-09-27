@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Healthcare_Appointment_System.Controllers {
+    /// <summary>
+    /// Controller for managing doctors in the Healthcare Appointment System.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class DoctorController : ControllerBase {
@@ -16,6 +19,10 @@ namespace Healthcare_Appointment_System.Controllers {
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Retrieves all doctors.
+        /// </summary>
+        /// <returns>A list of <see cref="DoctorDTO"/>.</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DoctorDTO>>> GetDoctors() {
             List<Doctor> doctors = await _context.Doctors.ToListAsync();
@@ -23,7 +30,12 @@ namespace Healthcare_Appointment_System.Controllers {
             return Ok(doctorDTOs);
         }
 
-        //Get doctor by ID
+        /// <summary>
+        /// Retrieves a doctor by ID, including their appointments.
+        /// </summary>
+        /// <param name="id">The doctor ID.</param>
+        /// <returns>A <see cref="DoctorDTO"/> representing the doctor.</returns>
+        /// <response code="404">If the doctor is not found.</response>
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<DoctorDTO>>> GetDoctor(int id) {
             Doctor? doctor = await _context.Doctors
@@ -36,7 +48,11 @@ namespace Healthcare_Appointment_System.Controllers {
             return Ok(doctorDTO);
         }
 
-        //Get all docs by specialties
+        /// <summary>
+        /// Retrieves doctors by specialty.
+        /// </summary>
+        /// <param name="specialty">The specialty.</param>
+        /// <returns>A list of <see cref="DoctorDTO"/>.</returns>
         [HttpGet("specialty/{specialty}")]
         public async Task<ActionResult<List<DoctorDTO>>> GetDoctorsBySpecialty(Specialty specialty) {
             List<Doctor> doctors = await _context.Doctors
@@ -46,7 +62,12 @@ namespace Healthcare_Appointment_System.Controllers {
             return Ok(_mapper.Map<List<DoctorDTO>>(doctors));
         }
 
-        //Get doctors appointment availabilty
+        /// <summary>
+        /// Retrieves a doctor's schedule (appointments) by doctor ID.
+        /// </summary>
+        /// <param name="id">The doctor ID.</param>
+        /// <returns>List of <see cref="AppointmentDTO"/> for the doctor.</returns>
+        /// <response code="404">If the doctor is not found.</response>
         [HttpGet("{id}/schedule")]
         public async Task<ActionResult<IEnumerable<AppointmentDTO>>> GetDoctorSchedule(int id) {
             Doctor doctor = await _context.Doctors
@@ -63,7 +84,12 @@ namespace Healthcare_Appointment_System.Controllers {
             return Ok(appointments);
         }
 
-        //Add new doctor
+        /// <summary>
+        /// Creates a new doctor.
+        /// </summary>
+        /// <param name="createDto">The doctor data.</param>
+        /// <returns>The newly created doctor.</returns>
+        /// <response code="400">If the model is invalid.</response>
         [HttpPost]
         public async Task<ActionResult<IEnumerable<DoctorDTO>>> CreateDoctor(CreateDoctorDTO createDto) {
             if(!ModelState.IsValid) {
@@ -77,7 +103,13 @@ namespace Healthcare_Appointment_System.Controllers {
             return CreatedAtAction(nameof(GetDoctor), new { id = doctor.DoctorId }, doctorDTO);
         }
 
-        //Update doctor information
+        /// <summary>
+        /// Updates a doctor by ID.
+        /// </summary>
+        /// <param name="id">The doctor ID.</param>
+        /// <param name="updateDto">Updated doctor data.</param>
+        /// <response code="400">If the model is invalid.</response>
+        /// <response code="404">If the doctor is not found.</response>
         [HttpPut("{id}")]
         public async Task<ActionResult<IEnumerable<DoctorDTO>>> UpdateDoctor(int id, UpdateDoctorDTO updateDto) {
             if(!ModelState.IsValid) {
@@ -93,7 +125,11 @@ namespace Healthcare_Appointment_System.Controllers {
             return NoContent();
         }
 
-        //delete doctor
+        /// <summary>
+        /// Deletes a doctor by ID.
+        /// </summary>
+        /// <param name="id">The doctor ID.</param>
+        /// <response code="404">If the doctor is not found.</response>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDoctor(int id) {
             Doctor doctor = await _context.Doctors.FindAsync(id);
@@ -105,15 +141,15 @@ namespace Healthcare_Appointment_System.Controllers {
             return NoContent();
         }
 
-        // Add these methods to your existing DoctorController class
-
-        // 1. GET /api/doctors/{doctorId}/available-slots?date={date}
+        /// <summary>
+        /// Retrieves available slots for a doctor on a given date.
+        /// </summary>
+        /// <param name="doctorId">The doctor ID.</param>
+        /// <param name="date">Optional date (defaults to today).</param>
+        /// <returns>A list of <see cref="AvailableSlotDTO"/>.</returns>
         [HttpGet("{doctorId}/available-slots")]
         public async Task<ActionResult<IEnumerable<AvailableSlotDTO>>> GetAvailableSlots(int doctorId, [FromQuery] DateTime? date) {
-            // Default to today if no date provided
             DateTime targetDate = date ?? DateTime.Today;
-
-            // Get doctor with their appointments for the specified date
             Doctor doctor = await _context.Doctors
                 .Include(d => d.Appointments.Where(a => a.StartTime.Date == targetDate.Date && a.AppointmentStatus != Status.Cancelled))
                 .Include(d => d.DoctorClinics.Where(dc => targetDate >= dc.StartDate && targetDate <= dc.EndDate))
@@ -124,13 +160,11 @@ namespace Healthcare_Appointment_System.Controllers {
                 return NotFound("Doctor not found");
             }
 
-            // Check if doctor works on this date
             DoctorClinic doctorClinicForDate = doctor.DoctorClinics.FirstOrDefault();
             if (doctorClinicForDate == null) {
-                return Ok(new List<AvailableSlotDTO>()); // No available slots if doctor doesn't work
+                return Ok(new List<AvailableSlotDTO>()); 
             }
 
-            // Generate time slots based on doctor's availability and appointment duration
             List<AvailableSlotDTO> availableSlots = new List<AvailableSlotDTO>();
 
             TimeSpan currentTime = doctor.AvailableStart;
@@ -140,16 +174,13 @@ namespace Healthcare_Appointment_System.Controllers {
                 DateTime slotStart = targetDate.Date.Add(currentTime);
                 DateTime slotEnd = slotStart.AddMinutes(doctor.AppointmentDurationMinutes);
 
-                // Check if this slot conflicts with existing appointments
                 bool isAvailable = !doctor.Appointments.Any(a =>
                     slotStart < a.EndTime && slotEnd > a.StartTime);
 
-                // Check if slot is within clinic operating hours
                 Clinic clinic = doctorClinicForDate.Clinic;
                 bool withinClinicHours = currentTime >= clinic.StartOperatingHours &&
                                        currentTime.Add(TimeSpan.FromMinutes(doctor.AppointmentDurationMinutes)) <= clinic.EndOperatingHours;
 
-                // Check if slot matches doctor's shift
                 bool matchesShift = (doctorClinicForDate.DoctorShift == Shift.Morning && currentTime.Hours < 12) ||
                                    (doctorClinicForDate.DoctorShift == Shift.Evening && currentTime.Hours >= 12);
 
@@ -169,26 +200,31 @@ namespace Healthcare_Appointment_System.Controllers {
             return Ok(availableSlots);
         }
 
-        // 6. POST /api/doctors/{doctorId}/assign-clinic
+        /// <summary>
+        /// Assigns a doctor to a clinic for a specific shift and date range.
+        /// </summary>
+        /// <param name="doctorId">The doctor ID.</param>
+        /// <param name="assignDto">The assignment details.</param>
+        /// <response code="201">Assignment created successfully.</response>
+        /// <response code="400">If the model is invalid or dates are incorrect.</response>
+        /// <response code="404">If the doctor or clinic is not found.</response>
+        /// <response code="409">If the doctor is already assigned in conflicting dates.</response>
         [HttpPost("{doctorId}/assign-clinic")]
         public async Task<ActionResult> AssignDoctorToClinic(int doctorId, AssignDoctorToClinicDTO assignDto) {
             if (!ModelState.IsValid) {
                 return BadRequest(ModelState);
             }
 
-            // Validate doctor exists
             bool doctorExists = await _context.Doctors.AnyAsync(d => d.DoctorId == doctorId);
             if (!doctorExists) {
                 return NotFound("Doctor not found");
             }
 
-            // Validate clinic exists
             bool clinicExists = await _context.Clinics.AnyAsync(c => c.ClinicId == assignDto.ClinicId);
             if (!clinicExists) {
                 return NotFound("Clinic not found");
             }
 
-            // Check if assignment already exists for overlapping dates
             bool conflictExists = await _context.DoctorClinics.AnyAsync(dc =>
                 dc.DoctorId == doctorId &&
                 dc.ClinicId == assignDto.ClinicId &&
@@ -199,7 +235,6 @@ namespace Healthcare_Appointment_System.Controllers {
                 return Conflict("Doctor is already assigned to this clinic during overlapping dates");
             }
 
-            // Check for scheduling conflicts with other clinics during same shift
             bool shiftConflict = await _context.DoctorClinics.AnyAsync(dc =>
                 dc.DoctorId == doctorId &&
                 dc.DoctorShift == assignDto.DoctorShift &&
@@ -210,7 +245,6 @@ namespace Healthcare_Appointment_System.Controllers {
                 return Conflict($"Doctor is already assigned to another clinic during {assignDto.DoctorShift} shift for overlapping dates");
             }
 
-            // Validate dates
             if (assignDto.StartDate >= assignDto.EndDate) {
                 return BadRequest("Start date must be before end date");
             }
@@ -219,7 +253,6 @@ namespace Healthcare_Appointment_System.Controllers {
                 return BadRequest("Start date cannot be in the past");
             }
 
-            // Create the assignment
             DoctorClinic assignment = new DoctorClinic {
                 DoctorId = doctorId,
                 ClinicId = assignDto.ClinicId,
@@ -231,7 +264,6 @@ namespace Healthcare_Appointment_System.Controllers {
             _context.DoctorClinics.Add(assignment);
             await _context.SaveChangesAsync();
 
-            // Return the created assignment details
             DoctorClinic result = await _context.DoctorClinics
                 .Include(dc => dc.Doctor)
                 .Include(dc => dc.Clinic)
