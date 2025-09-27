@@ -5,6 +5,9 @@ using AutoMapper;
 
 namespace Healthcare_Appointment_System.Controllers
 {
+    /// <summary>
+    /// Controller for managing patients in the Healthcare Appointment System.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class PatientsController : ControllerBase
@@ -18,6 +21,10 @@ namespace Healthcare_Appointment_System.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Retrieves all active patients.
+        /// </summary>
+        /// <returns>A list of <see cref="PatientDTO"/>.</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PatientDTO>>> GetPatients()
         {
@@ -29,6 +36,12 @@ namespace Healthcare_Appointment_System.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Retrieves a specific patient by ID.
+        /// </summary>
+        /// <param name="id">The patient ID.</param>
+        /// <returns>A <see cref="PatientDTO"/> representing the patient.</returns>
+        /// <response code="404">If the patient is not found.</response>
         [HttpGet("{id}")]
         public async Task<ActionResult<PatientDTO>> GetPatient(int id)
         {
@@ -42,6 +55,12 @@ namespace Healthcare_Appointment_System.Controllers
             return Ok(dto);
         }
 
+        /// <summary>
+        /// Creates a new patient.
+        /// </summary>
+        /// <param name="dto">The patient data.</param>
+        /// <response code="201">Patient created successfully.</response>
+        /// <response code="409">If a patient with the same email already exists.</response>
         [HttpPost]
         public async Task<ActionResult> CreatePatient(CreatePatientDTO dto)
         {
@@ -55,6 +74,12 @@ namespace Healthcare_Appointment_System.Controllers
             return CreatedAtAction(nameof(GetPatient), new { id = patient.PatientId }, patient);
         }
 
+        /// <summary>
+        /// Updates a patient by ID.
+        /// </summary>
+        /// <param name="id">The patient ID.</param>
+        /// <param name="dto">Updated patient data.</param>
+        /// <response code="404">If the patient is not found.</response>
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdatePatient(int id, UpdatePatientDTO dto)
         {
@@ -67,6 +92,13 @@ namespace Healthcare_Appointment_System.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Soft deletes a patient by marking as deleted.
+        /// </summary>
+        /// <param name="id">The patient ID.</param>
+        /// <response code="204">Patient deleted successfully.</response>
+        /// <response code="400">If the patient is already deleted.</response>
+        /// <response code="404">If the patient is not found.</response>
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeletePatient(int id)
         {
